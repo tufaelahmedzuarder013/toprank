@@ -74,7 +74,7 @@ With no `STRIPE_SECRET_KEY`, the site runs in **demo mode**: a banner says so on
 | --- | --- | --- |
 | `DATABASE_URL` | yes | PostgreSQL connection string used by the app (a pooled URL is fine). |
 | `DIRECT_URL` | no | Direct (non-pooled) URL used only by `prisma migrate` — set it when `DATABASE_URL` goes through a pooler. `DATABASE_URL_UNPOOLED` (set by Neon on Vercel) is picked up too. |
-| `NEXT_PUBLIC_SITE_URL` | yes | Public base URL (Stripe redirects, canonical URLs, sitemap, OG). |
+| `NEXT_PUBLIC_SITE_URL` | yes (except on Vercel) | Public base URL (Stripe redirects, canonical URLs, sitemap, OG). On Vercel it defaults to the production domain. |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | for seeding | `npm run db:seed` creates (or promotes) this admin. Password ≥ 10 characters. |
 | `SEED_DEMO` | no | `false` seeds everything except the fictional demo listings. |
 | `STRIPE_SECRET_KEY` | for payments | `sk_test_…` while testing. Empty = demo mode. |
@@ -141,7 +141,7 @@ Steps:
 2. **Import the GitHub repo** in Vercel (Add New → Project). Framework and build settings are auto-detected.
 3. **Database:** in the project, Storage → add Postgres from the Marketplace (Neon, Prisma Postgres, Supabase…) and connect it to Production. The integration sets `DATABASE_URL` (Neon also sets `DATABASE_URL_UNPOOLED`, which migrations use automatically). For another provider, set `DATABASE_URL` and, if it is pooled, `DIRECT_URL`. Pick a function region close to the database (Settings → Functions).
 4. **Environment variables** (Settings → Environment Variables, Production):
-   - `NEXT_PUBLIC_SITE_URL` — your production URL, e.g. `https://your-project.vercel.app`
+   - `NEXT_PUBLIC_SITE_URL` — optional on Vercel (falls back to the project's production `*.vercel.app` domain); set it when you add a custom domain
    - `ADMIN_EMAIL`, `ADMIN_PASSWORD` (≥ 10 characters) — the first admin account
    - `SEED_DEMO` — `false` to start without the labelled demo listings
    - `CRON_SECRET` — any long random string

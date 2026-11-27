@@ -24,8 +24,15 @@ export function getStripe(): Stripe {
   return stripeClient;
 }
 
+/**
+ * Public base URL. On Vercel it falls back to the project's production domain (a system
+ * variable Vercel provides), then to the deployment URL, so it works before you set
+ * NEXT_PUBLIC_SITE_URL — set it explicitly once you add a custom domain.
+ */
 export function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
+  const vercelHost = process.env.VERCEL_ENV === "production" ? process.env.VERCEL_PROJECT_PRODUCTION_URL : process.env.VERCEL_URL;
+  const url = process.env.NEXT_PUBLIC_SITE_URL || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
+  return url.replace(/\/+$/, "");
 }
 
 export type CheckoutRequest = {
