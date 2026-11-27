@@ -1,26 +1,328 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   Brand colours (--brand, --brand-2) are injected on <html> from the admin
+   settings; everything else derives from them. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand: #ff6a3d;
+  --brand-2: #7c5cff;
+
+  --background: #f7f7f9;
+  --surface: #ffffff;
+  --surface-2: #f2f2f5;
+  --surface-3: #e9e9ee;
+  --border: #e4e4ea;
+  --border-strong: #d2d2db;
+  --foreground: #0d0e12;
+  --muted: #5d5f6b;
+  --subtle: #6b6d78;
+  --ring: color-mix(in oklab, var(--brand) 55%, transparent);
+
+  /* Overridden per site by brandCss() with contrast-checked values */
+  --brand-solid: #ff6a3d;
+  --brand-fg: #160b07;
+  --brand-2-solid: #7758f5;
+  --brand-2-fg: #ffffff;
+  --brand-ink: #b04a29;
+  --brand-2-ink: #6046cc;
+  --brand-soft: color-mix(in oklab, var(--brand) 11%, transparent);
+  --brand-softer: color-mix(in oklab, var(--brand) 6%, transparent);
+  --brand-2-soft: color-mix(in oklab, var(--brand-2) 12%, transparent);
+
+  --gold: #e9a700;
+  --silver: #8e99aa;
+  --bronze: #c47a48;
+  --success: #107937;
+  --success-soft: color-mix(in oklab, var(--success) 12%, transparent);
+  --danger: #bc3b3f;
+  --danger-soft: color-mix(in oklab, var(--danger) 11%, transparent);
+  --warning: #8f5b00;
+  --warning-soft: color-mix(in oklab, var(--warning) 14%, transparent);
+  --danger-solid: #c9353a;
+
+  --shadow-sm: 0 1px 2px rgb(16 17 26 / 0.05);
+  --shadow-md: 0 1px 2px rgb(16 17 26 / 0.04), 0 6px 20px -6px rgb(16 17 26 / 0.1);
+  --shadow-lg: 0 2px 4px rgb(16 17 26 / 0.04), 0 18px 48px -12px rgb(16 17 26 / 0.18);
+  color-scheme: light;
+}
+
+.dark {
+  --background: #09090c;
+  --surface: #111116;
+  --surface-2: #17171e;
+  --surface-3: #202029;
+  --border: #23232c;
+  --border-strong: #32323d;
+  --foreground: #f3f3f6;
+  --muted: #a3a5b1;
+  --subtle: #8c8e9a;
+
+  --brand-soft: color-mix(in oklab, var(--brand) 17%, transparent);
+  --brand-softer: color-mix(in oklab, var(--brand) 8%, transparent);
+  --brand-2-soft: color-mix(in oklab, var(--brand-2) 20%, transparent);
+  --brand-ink: #ff6a3d;
+  --brand-2-ink: #9d85ff;
+
+  --gold: #f5bf2a;
+  --silver: #b3bccb;
+  --bronze: #dd9466;
+  --success: #2fc566;
+  --danger: #ff6369;
+  --warning: #f5a524;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.7);
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-fg: var(--brand-fg);
+  --color-brand-solid: var(--brand-solid);
+  --color-brand-2-solid: var(--brand-2-solid);
+  --color-brand-2-fg: var(--brand-2-fg);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-softer: var(--brand-softer);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-2: var(--brand-2);
+  --color-brand-2-soft: var(--brand-2-soft);
+  --color-brand-2-ink: var(--brand-2-ink);
+  --color-gold: var(--gold);
+  --color-silver: var(--silver);
+  --color-bronze: var(--bronze);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-solid: var(--danger-solid);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand) 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 7rem;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand) 28%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  button,
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@layer components {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .fade-x {
+    mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+    border-radius: 0.5rem;
+  }
+  .stagger > * {
+    animation: var(--animate-fade-up);
+    animation-delay: calc(min(var(--i, 0), 12) * 35ms);
+  }
+  .grid-bg {
+    background-image: linear-gradient(to right, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .brand-gradient {
+    background-image: linear-gradient(120deg, var(--brand), color-mix(in oklab, var(--brand) 50%, var(--brand-2)) 55%, var(--brand-2));
+  }
+  .text-gradient {
+    background-image: linear-gradient(100deg, var(--brand) 10%, var(--brand-2) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Long-form copy for info pages (rendered from admin-editable Markdown) */
+  .prose-content {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+  .prose-content > * + * {
+    margin-top: 1rem;
+  }
+  .prose-content h2 {
+    color: var(--foreground);
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 2.25rem;
+  }
+  .prose-content h3 {
+    color: var(--foreground);
+    font-size: 1.075rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+  }
+  .prose-content strong {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  .prose-content a {
+    color: var(--brand-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-content ul,
+  .prose-content ol {
+    padding-left: 1.25rem;
+  }
+  .prose-content ul {
+    list-style: disc;
+  }
+  .prose-content ol {
+    list-style: decimal;
+  }
+  .prose-content li + li {
+    margin-top: 0.4rem;
+  }
+  .prose-content li::marker {
+    color: var(--subtle);
+  }
+  .prose-content code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    padding: 0.1em 0.35em;
+    color: var(--foreground);
+  }
+  .prose-content blockquote {
+    border-left: 3px solid var(--brand);
+    padding: 0.25rem 0 0.25rem 1rem;
+    color: var(--foreground);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
